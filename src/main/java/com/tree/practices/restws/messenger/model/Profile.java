@@ -17,7 +17,7 @@ public class Profile {
 
 	}
 
-	public Profile(long id, String profileName, String firstName, String lastName, Date created) {
+	public Profile(long id, String profileName, String firstName, String lastName) {
 		this.id = id;
 		this.profileName = profileName;
 		this.firstName = firstName;
