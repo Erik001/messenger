@@ -2,9 +2,12 @@ package com.tree.practices.restws.messenger.model;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Comment {
 	private long id;
-	private String message;
+	private String comment;
 	private Date created;
 	private String author;
 	
@@ -14,7 +17,7 @@ public Comment() {
     
     public Comment(long id, String message, String author) {
     	this.id = id;
-    	this.message = message;
+    	this.comment = message;
     	this.author = author;
     	this.created = new Date();
     }
@@ -27,12 +30,12 @@ public Comment() {
 		this.id = id;
 	}
 
-	public String getMessage() {
-		return message;
+	public String getComment() {
+		return comment;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
+	public void setComment(String message) {
+		this.comment = message;
 	}
 
 	public Date getCreated() {
