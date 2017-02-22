@@ -77,5 +77,12 @@ public class Message {
 	public void setLinks(List<Link> links) {
 		this.links = links;
 	}
+	
+	public void addLink(String url, String rel){
+		Link link = new Link();
+		link.setLink(url);
+		link.setRel(rel);
+		links.add(link);
+	}
 
 }

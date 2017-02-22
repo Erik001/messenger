@@ -61,7 +61,7 @@ public class MessageResource {
 	// public Message addMessage(Message message) {
 	// public Response addMessage(Message message) throws URISyntaxException {In
 	// order to get the uri programmatically
-	public Response addMessage(Message message, @Context UriInfo uriInfo){
+	public Response addMessage(Message message, @Context UriInfo uriInfo) {
 		Message newMessage = messageService.addMessage(message);
 		// return Response.status(Status.CREATED).entity(newMessage).build(); Is
 		// preferable to use created rather than status
@@ -93,8 +93,19 @@ public class MessageResource {
 	@GET
 	@Path("/{messageId}")
 	// @Produces(MediaType.APPLICATION_JSON)
-	public Message getMessage(@PathParam("messageId") long id) {
-		return messageService.getMessage(id);		
+	public Message getMessage(@PathParam("messageId") long id, @Context UriInfo uriInfo) {
+		Message message = messageService.getMessage(id);
+		message.addLink(getUriForSelf(uriInfo, message) , "self");
+		return message;
+	}
+
+	private String getUriForSelf(UriInfo uriInfo, Message message) {
+		String uri = uriInfo.getBaseUriBuilder() ///It adds this section of the uri http://localhost:8080/messenger/webapi/
+		.path(MessageResource.class)   ///It adds the section that corresponds to the resource /messages
+		.path(Long.toString(message.getId())) /// It adds the message Id at the end of the uri /{messageId}
+		.build() //Generates the Uri
+		.toString();
+		return uri;
 	}
 
 	// @GET To avoid having all the methods and functionality in the same class

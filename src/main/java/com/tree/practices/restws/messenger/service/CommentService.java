@@ -25,7 +25,7 @@ public class CommentService {
 
 	public Comment getComment(long messageId, long commentId) {
 		Message message = messages.get(messageId);
-		ErrorMessage errorMessage= new ErrorMessage("Not Found!!!", 404, "http://www.google.com");
+		ErrorMessage errorMessage= new ErrorMessage("Not Found!!!", 404, "http://www.errors.com");
 		Response response = Response.status(Status.NOT_FOUND).entity(errorMessage).build();
 		if (message == null) {
 			throw new WebApplicationException(response);
