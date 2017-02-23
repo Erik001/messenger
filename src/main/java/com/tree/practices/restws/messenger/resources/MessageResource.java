@@ -21,6 +21,7 @@ import javax.ws.rs.core.UriInfo;
 import com.tree.practices.restws.messenger.exception.DataNotFoundException;
 import com.tree.practices.restws.messenger.model.Message;
 import com.tree.practices.restws.messenger.resources.beans.MessageFilterBean;
+import com.tree.practices.restws.messenger.service.CommentService;
 import com.tree.practices.restws.messenger.service.MessageService;
 
 @Path("/messages")
@@ -96,7 +97,27 @@ public class MessageResource {
 	public Message getMessage(@PathParam("messageId") long id, @Context UriInfo uriInfo) {
 		Message message = messageService.getMessage(id);
 		message.addLink(getUriForSelf(uriInfo, message) , "self");
+		message.addLink(getUriForProfile(uriInfo, message) , "profile");
+		message.addLink(getUriForComments(uriInfo, message) , "comments");
 		return message;
+	}
+
+	private String getUriForComments(UriInfo uriInfo, Message message) {
+		URI uri = uriInfo.getBaseUriBuilder() ///It adds this section of the uri http://localhost:8080/messenger/webapi/
+				.path(MessageResource.class)   ///It adds the section that corresponds to the resource /messages
+				.path(MessageResource.class, "getCommentResource")   ///It adds the section that corresponds to the resource /{messageId}/comments
+				.path(CommentResource.class)  /// doesn't hurt if we add it
+				.resolveTemplate("messageId", message.getId()) //It will replace the messageId variable by the actual Id of the message, if not added the following exception its been thrown java.lang.IllegalArgumentException: The template variable 'messageId' has no value
+				.build();
+		return uri.toString();
+	}
+
+	private String getUriForProfile(UriInfo uriInfo, Message message) {
+		URI uri = uriInfo.getBaseUriBuilder() ///It adds this section of the uri http://localhost:8080/messenger/webapi/
+				.path(ProfileResource.class)   ///It adds the section that corresponds to the resource /profiles
+				.path(message.getAuthor())  /// It adds the author name at the end of the uri /{authorName}
+				.build();
+		return uri.toString();
 	}
 
 	private String getUriForSelf(UriInfo uriInfo, Message message) {
