@@ -5,8 +5,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 public class Link {
 
-	public String link;
-	public String rel;
+	private String link;
+	private String rel;
 
 
 	public String getLink() {

@@ -1,7 +1,6 @@
 package com.tree.practices.restws.messenger.resources;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.ws.rs.BeanParam;
@@ -18,14 +17,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import com.tree.practices.restws.messenger.exception.DataNotFoundException;
 import com.tree.practices.restws.messenger.model.Message;
 import com.tree.practices.restws.messenger.resources.beans.MessageFilterBean;
-import com.tree.practices.restws.messenger.service.CommentService;
 import com.tree.practices.restws.messenger.service.MessageService;
 
 @Path("/messages")
 @Consumes(MediaType.APPLICATION_JSON)
+//@Produces(value={MediaType.APPLICATION_JSON,MediaType.TEXT_XML}) //We can override this at method level
 @Produces(MediaType.APPLICATION_JSON)
 public class MessageResource {
 
@@ -40,7 +38,28 @@ public class MessageResource {
 	 * 
 	 * @QueryParam(value = "size") int size) {
 	 */
-	public List<Message> getMessages(@BeanParam MessageFilterBean filterBean) {
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Message> getJsonMessages(@BeanParam MessageFilterBean filterBean) {
+		System.out.println("JSON method has been called!!");
+		// if (year > 0) {
+		if (filterBean.getYear() > 0) {
+			// return messageService.getAllMessagesForYear(year);
+			return messageService.getAllMessagesForYear(filterBean.getYear());
+		}
+		/*
+		 * if (start >= 0 && size > 0) { return
+		 * messageService.getAllMessagesPaginated(start, size);
+		 */
+		if (filterBean.getStart() >= 0 && filterBean.getSize() > 0) {
+			return messageService.getAllMessagesPaginated(filterBean.getStart(), filterBean.getSize());
+		}
+		return messageService.getAllMessages();
+	}
+	
+	@GET
+	@Produces(MediaType.TEXT_XML)
+	public List<Message> getXmlMessages(@BeanParam MessageFilterBean filterBean) {
+		System.out.println("XML method has been called!!");
 		// if (year > 0) {
 		if (filterBean.getYear() > 0) {
 			// return messageService.getAllMessagesForYear(year);
@@ -57,12 +76,31 @@ public class MessageResource {
 	}
 
 	@POST
-	// @Consumes(MediaType.APPLICATION_JSON)
-	// @Produces(MediaType.APPLICATION_JSON)
+	 @Consumes(MediaType.APPLICATION_JSON)
+	 @Produces(MediaType.APPLICATION_JSON)
 	// public Message addMessage(Message message) {
 	// public Response addMessage(Message message) throws URISyntaxException {In
 	// order to get the uri programmatically
-	public Response addMessage(Message message, @Context UriInfo uriInfo) {
+	public Response addJsonMessage(Message message, @Context UriInfo uriInfo) {
+		Message newMessage = messageService.addMessage(message);
+		// return Response.status(Status.CREATED).entity(newMessage).build(); Is
+		// preferable to use created rather than status
+		// System.out.println(uriInfo.getAbsolutePath());
+		String newMessageId = String.valueOf(newMessage.getId());
+		URI uri = uriInfo.getAbsolutePathBuilder().path(newMessageId).build();
+		// return Response.created(new URI("/messenger/webapi/messages/" +
+		// newMessage.getId())).entity(newMessage).build();
+		return Response.created(uri).entity(newMessage).build();
+		// return messageService.addMessage(message);
+	}
+	
+	@POST
+	 @Consumes(MediaType.TEXT_XML)
+	 @Produces(MediaType.TEXT_XML)
+	// public Message addMessage(Message message) {
+	// public Response addMessage(Message message) throws URISyntaxException {In
+	// order to get the uri programmatically
+	public Response addXmlMessage(Message message, @Context UriInfo uriInfo) {
 		Message newMessage = messageService.addMessage(message);
 		// return Response.status(Status.CREATED).entity(newMessage).build(); Is
 		// preferable to use created rather than status
